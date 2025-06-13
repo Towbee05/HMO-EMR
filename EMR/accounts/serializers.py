@@ -13,7 +13,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         fields = ["email", "full_name", "password1", "password2"]
 
     def create(self, validated_data):
-        print(validated_data)
+        # print(validated_data)
         user = User.objects.create(
             email = validated_data["email"],
             full_name = validated_data['full_name'],
@@ -37,20 +37,21 @@ class UserRegistrationPlanSerializer(serializers.ModelSerializer):
         fields = ["email", "first_name", "last_name", "full_name", "gender", "phone_number", "password1", "password2"]
 
     def validate(self, attrs):
-        print(attrs)
+        # print(attrs)
         #Creating a regex expression to validate the phone number as Nigerian
         regex = r'^((\+?234)\s?|0)(((7)0)|((8|9)(0|1)))\d{8}'
         phone_number = attrs.get('phone_number')
         matched = re.match(regex, phone_number)
 
         if matched:
-            print(phone_number)
+            pass
+            # print(phone_number)
         else:
             raise ValueError(_("Not a valid phone number"))
         return super().validate(attrs)
     
     def create(self, validated_data):
-        print(validated_data)
+        # print(validated_data)
         user = User.objects.create_user(
             email = validated_data["email"],
             first_name = validated_data['first_name'],
@@ -76,7 +77,7 @@ class HospitalRegistrationSerializer(serializers.ModelSerializer):
         return super().validate(attrs)
     
     def create(self, validated_data):
-        print(validated_data)
+        # print(validated_data)
         user = User.objects.create_user(
             email = validated_data["email"],
             first_name = validated_data['first_name'],
@@ -104,7 +105,7 @@ class LoginSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        print(attrs, email, password)
+        # print(attrs, email, password)
         request = self.context['request']
         user = authenticate(request, email= email, password= password)
         if user is None:
