@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False 
+DEBUG = True 
 
 ALLOWED_HOSTS = ['localhost', 'https://hmo-emr.onrender.com/', 'hmo-emr.onrender.com']
 
@@ -42,10 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'whitenoise',
     'corsheaders',
+    'djmoney',
     'rest_framework',
     # ' ',
     'accounts',
     'patients',
+    'hospitals',
 ]
 
 CORS_ALLOWED_ORIGINS = [

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from accounts.models import User
+from accounts.models import User, Plans
 from django.contrib.auth import authenticate, login
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -118,3 +118,9 @@ class LoginSerializer(serializers.ModelSerializer):
             'refresh_token' : str(token.get('refresh')),
             'access_token' : str(token.get('access'))
         }
+
+
+class PlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Plans
+        fields = '__all__'

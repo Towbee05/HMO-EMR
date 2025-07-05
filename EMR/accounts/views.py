@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from accounts.serializers import UserRegistrationPlanSerializer, LoginSerializer, HospitalRegistrationSerializer, RegisterUserSerializer
+from accounts.serializers import UserRegistrationPlanSerializer, LoginSerializer, HospitalRegistrationSerializer, RegisterUserSerializer, PlanSerializer
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.viewsets import ModelViewSet
+from accounts.models import Plans
 
 # Create your views here.
 
@@ -56,3 +58,8 @@ class LoginView(GenericAPIView):
         return Response({
             'data' : serializer.data,
         }, status=status.HTTP_200_OK)
+    
+
+class PlansViewset(ModelViewSet):
+    queryset = Plans.objects.all()
+    serializer_class = PlanSerializer

@@ -3,15 +3,29 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from accounts.manager import UserManager
 from rest_framework_simplejwt.tokens import RefreshToken
+from djmoney.models.fields import MoneyField
 
 # Create your models here.
+class Coverage(models.Model):
+    name = models.CharField(null=False, blank=False)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'Coverage'
+
 class Plans(models.Model):
     name = models.CharField(max_length=256, null=False, blank=False)
-    price = models.DecimalField(max_digits=10, decimal_places=5 ,null=False, blank=False)
+    coverage = models.ManyToManyField(Coverage, related_name='coverage')
+    price = MoneyField(max_digits=15, decimal_places=2 ,null=False, blank=False, default_currency='NGN')
+
 
     def __str__(self):
         return self.name
     
+    class Meta:
+        verbose_name_plural = 'Plans'
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True, verbose_name=_("Email Address"))
