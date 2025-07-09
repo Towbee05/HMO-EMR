@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from accounts.models import User, Plans
+from accounts.models import User, Plans, Coverage
 from django.contrib.auth import authenticate, login
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from django.utils.translation import gettext_lazy as _
 import re
+from django.contrib.auth.hashers import make_password, check_password
 
 class RegisterUserSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(max_length=20, min_length=6, write_only=True)
@@ -95,12 +96,10 @@ class HospitalRegistrationSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length= 256, min_length= 8)
     password = serializers.CharField(max_length = 60, min_length=6, write_only= True)
-    access_token = serializers.CharField(max_length = 255, read_only= True)
-    refresh_token = serializers.CharField(max_length = 255, read_only = True)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'access_token', 'refresh_token']
+        fields = ['email', 'password'] #, 'access_token', 'refresh_token']
 
     def validate(self, attrs):
         email = attrs.get('email')
@@ -110,17 +109,53 @@ class LoginSerializer(serializers.ModelSerializer):
         user = authenticate(request, email= email, password= password)
         if user is None:
             raise AuthenticationFailed('Invalid Credentials')
-        token = user.tokens()
 
         return {
             'email' : user.email,
-            'full name' : user.full_name,
-            'refresh_token' : str(token.get('refresh')),
-            'access_token' : str(token.get('access'))
+            'full name' : user.full_name
         }
 
 
 class PlanSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=250, required=True)
     class Meta:
         model = Plans
         fields = '__all__'
+
+
+class CoverageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coverage
+        fields = '__all__'
+
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    password2 = serializers.CharField(write_only=True, required=True)
+    
+    class Meta: 
+        model = User
+        fields = ['old_password', 'password', 'password2']
+
+    def validate(self, data):
+        if data['password'] != data['password2']:
+            raise ValidationError(_(f"Passwords must be equal"))
+        
+        return data
+    
+    def validate_oldpassword(self, value):
+        print(self)
+        user = self.context['request'].user
+        print(user)
+        if not user.check_password(value):
+            raise ValidationError(_("Entered Password does not match that in db"))
+        
+        return value
+    
+    def update(self, instance, validated_data):
+        print('UPDATE', instance)
+
+        instance.set_password(validated_data['password'])
+        instance.save()
+        return instance

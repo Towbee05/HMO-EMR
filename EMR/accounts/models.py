@@ -26,6 +26,8 @@ class Plans(models.Model):
     
     class Meta:
         verbose_name_plural = 'Plans'
+        ordering= ['name']
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True, verbose_name=_("Email Address"))

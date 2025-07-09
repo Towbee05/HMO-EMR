@@ -6,6 +6,8 @@ from django.contrib.auth.hashers import make_password, check_password
 import uuid
 from datetime import date
 from accounts.models import User
+from django.utils import timezone
+
 # Create your models here.
 
 regex = r'^((([+](234){1}+(70|80|90|81))|(070|080|090|081))[0-9]{8})$'
@@ -29,16 +31,21 @@ class Hospitals(models.Model):
     status = models.CharField(max_length=20, choices=HOSPITAL_STATUS_CHOICES, default=ACTIVE)
     phone = models.CharField(null=False, blank=False, unique=True,validators=[RegexValidator(regex, message="Invalid Phone number entered!!", code='invalid_phone_no')])
     services = models.TextField(verbose_name='services')
-    plans = models.ForeignKey(Plans, on_delete=models.CASCADE, related_name='hospitals')
+    plans = models.ForeignKey(Plans, on_delete=models.SET_NULL, null=True, related_name='hospitals')
     accredition_license = models.CharField(blank=False, null=False, default='null')
     accredition_status = models.CharField(blank=False, null=False, default='active')
     accredition_expires = models.DateField(default=date.today)  
     # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='users')
-    password = models.CharField(null=False, blank=False)
+    display_picture = models.ImageField(upload_to='uploads/', null=True, blank=True)
+    # password = models.CharField(null=False, blank=False)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hospital', null=True)
 
     class Meta:
         verbose_name_plural = "Hospitals"
-    
+        ordering = ['-date_joined']
+
     def __str__(self):
         return self.name
     
@@ -48,36 +55,3 @@ class Hospitals(models.Model):
     def check_password(self, raw_password):
         return check_password(raw_password, self.password)
     
-    # def save(self, *args, **kwargs):
-    #     user, created= User.objects.get_or_create(email= self.email)
-    #     if not created:
-    #         user.full_name= self.name
-    #         user.password = self.password
-    #         user.save()
-    #     self.password = make_password(self.password)
-    #     super().save(*args, **kwargs)
-        
-    # def save(self, *args, **kwargs):
-    # # Check if the instance already exists
-    #     if self.pk:  # This means the instance already exists in the database
-    #         # Get the existing user
-    #         try:
-    #             user = User.objects.get(email=self.email)
-    #             user.full_name = self.name
-    #             # Only update the password if it has changed
-    #             if self.password and not user.check_password(self.password):
-    #                 user.password = self.password
-    #             user.save()
-    #         except User.DoesNotExist:
-    #             # If the user does not exist, create a new one
-    #             user = User(email=self.email, full_name=self.name)
-    #             user.set_password(self.password)  # Use the method to hash the password
-    #             user.save()
-    #     else:
-    #         # If it's a new instance, create a new user
-    #         user = User(email=self.email, full_name=self.name)
-    #         user.set_password(self.password)  # Use the method to hash the password
-    #         user.save()
-    #     # Hash the password before saving the hospital instance
-    #     self.password = make_password(self.password)
-    #     super().save(*args, **kwargs)
