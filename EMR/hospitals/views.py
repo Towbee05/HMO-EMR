@@ -4,15 +4,17 @@ from hospitals.serializers import HospitalSerializers
 from hospitals.models import Hospitals
 from rest_framework import status
 from rest_framework.response import Response
-# from accounts.permission import IsSuperAdmin
-
+from accounts.permissions import IsSuperuser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 # Create your views here.
 
 class HospitalViewset(ModelViewSet):
     # queryset = Hospitals.objects.all()
     serializer_class = HospitalSerializers
     # lookup_field= 'name'
-    # permission_classes = [IsSuperAdmin]
+    permission_classes = [ IsSuperuser, IsAuthenticated ]
+    authentication_classes = [ TokenAuthentication ]
 
     def get_queryset(self):
         queryset = Hospitals.objects.all()

@@ -5,42 +5,23 @@ from django.core.validators import validate_email
 
 
 class UserManager(BaseUserManager):
-    def email_validator(self, email):
-        try:
-            validate_email(email)
-        except ValidationError:
-            raise ValueError(_("Enter a valid email address"))
-    
-    def create_user(self, email, password, **extra_fields):
+    def create_user(self, email, full_name, password, **extra_fields):
         if email:
             email = self.normalize_email(email)
             validate_email(email)
         else:
             raise ValueError(_("Please provide an email address"))
         
-        # if not first_name:
-        #     raise ValueError(_("Please provide a first name"))
-        
-        # if not last_name:
-        #     raise ValueError(_("Please provide a last name"))
-        
-        # if not gender:
-        #     raise ValueError(_("Please select a specific gender"))
-        
-        # if not phone_number:
-        #     raise ValueError(_("Please provide a phone number"))
-        
-        # if len(phone_number) < 10:
-        #     raise ValueError(_("Provided phone number is invalid"))
-        
+        if not full_name:
+            raise ValueError(_("Please provide a Full name"))
 
-        user= self.model(email=email, **extra_fields)
+        user= self.model(email=email, full_name= full_name, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_staffuser(self, email, password,  **extra_fields):
+    def create_staffuser(self, email, full_name, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', False)
         extra_fields.setdefault('is_active', True)
@@ -51,12 +32,11 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not False:
             raise ValueError(_("Admin user should not have superadmin privileges"))
         
-        user = self.create_user(email=email, password=password,  **extra_fields)
-        user.save(using=self._db)
-
-        return user
+        return self.create_user(email=email, full_name=full_name, password=password, **extra_fields)
+        # user.save(using=self._db)
+        # return user
     
-    def create_superuser(self, email, password,  **extra_fields):
+    def create_superuser(self, email, full_name, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
@@ -67,7 +47,4 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(_("Superadmin user should have superadmin privileges"))
         
-        user = self.create_user(email=email, password=password, **extra_fields)
-        user.save(using=self._db)
-
-        return user
+        return self.create_user(email=email, full_name=full_name, password=password, **extra_fields)

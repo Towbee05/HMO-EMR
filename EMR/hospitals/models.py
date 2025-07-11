@@ -9,9 +9,10 @@ from accounts.models import User
 from django.utils import timezone
 
 # Create your models here.
-
+# ! Regex expression to validate phone number
 regex = r'^((([+](234){1}+(70|80|90|81))|(070|080|090|081))[0-9]{8})$'
 
+# !Model representing how the Hospitals table looks in the database. The Hospitals table consists of all hospitals registered under the HMO
 class Hospitals(models.Model):
     ACTIVE = 'Active'
     INACTIVE = 'Inactive'
@@ -36,7 +37,6 @@ class Hospitals(models.Model):
     accredition_status = models.CharField(blank=False, null=False, default='active')
     accredition_expires = models.DateField(default=date.today)  
     # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='users')
-    display_picture = models.ImageField(upload_to='uploads/', null=True, blank=True)
     # password = models.CharField(null=False, blank=False)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)

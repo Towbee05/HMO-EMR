@@ -34,8 +34,6 @@ class HospitalSerializers(serializers.ModelSerializer):
         return value
     
     def update(self, instance, validated_data):
-        print(f"serializer : {instance.user}")
-        print(f"serializer : {validated_data}")
         name = validated_data.get('name') or None
         email = validated_data.get('email') or None
         location = validated_data.get('location') or None
@@ -95,8 +93,6 @@ class HospitalSerializers(serializers.ModelSerializer):
             user.password = make_password(validated_data['password'])
             user.is_staff= True
             user.save()
-        # password = validated_data['password']
-        # hospital.password = make_password(password)
         hospital.user= user
         hospital.save()
         return validated_data

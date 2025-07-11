@@ -6,7 +6,7 @@ from django.core.validators import RegexValidator
 # Create your models here.
 
 regex = r'^((([+](234){1}+(70|80|90|81))|(070|080|090|081))[0-9]{8})$'
-
+# !Model representing how the patients table looks in the database. This table handles all patients registered under the HMO
 class Patients(models.Model):
     MALE = 'Male'
     FEMALE = 'Female'

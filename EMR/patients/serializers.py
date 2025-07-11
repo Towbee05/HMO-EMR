@@ -12,7 +12,7 @@ class PatientSerializer(serializers.ModelSerializer):
     plan = serializers.PrimaryKeyRelatedField(queryset= Plans.objects.all(), many=False)
     class Meta:
         model = Patients
-        fields = ['id', 'name', 'age', 'email', 'phone', 'plan', 'status', 'password']
+        fields = ['id', 'name', 'age', 'email', 'gender', 'phone', 'plan', 'status', 'password']
 
     def validate_name(self, value):
         if Patients.objects.filter(name__iexact = value).exists() or User.objects.filter(full_name__iexact = value).exists():
@@ -39,6 +39,7 @@ class PatientSerializer(serializers.ModelSerializer):
         age = validated_data.get('age') or None
         email = validated_data.get('email') or None
         phone = validated_data.get('phone') or None
+        gender = validated_data.get('gender') or None
         plan = validated_data.get('plan') or None
         status = validated_data.get('status') or None
 
@@ -55,6 +56,8 @@ class PatientSerializer(serializers.ModelSerializer):
             instance.age = age
         if phone is not None:
             instance.phone = phone
+        if gender is not None:
+            instance.gender = gender
         if plan is not None:
             instance.plan = plan
         if status is not None:
@@ -70,6 +73,7 @@ class PatientSerializer(serializers.ModelSerializer):
             age= validated_data['age'],
             email = validated_data['email'],
             phone = validated_data['phone'],
+            gender = validated_data['gender'],
             plan = validated_data['plan'],
             status = validated_data['status']
         )
